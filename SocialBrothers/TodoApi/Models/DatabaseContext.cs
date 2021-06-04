@@ -8,12 +8,12 @@ namespace TodoApi.Models
 {
     public class DatabaseContext : DbContext
     {
+        public DbSet<Address> Address { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite(@"Data Source = SocialBrothers.db;");
         }
-
-        public DbSet<Address> Address { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
