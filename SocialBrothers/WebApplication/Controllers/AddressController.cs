@@ -56,7 +56,8 @@ namespace WebApplication.Controllers
                 {
                     if (prop.Name.Equals(sort))
                     {
-                        addresses = addresses.OrderBy(s => s.City).ToList();
+                        //TODO prop.name has to get the same as s.
+                        addresses = addresses.OrderBy(s => prop.Name).ToList();
                         break;
                     }
                 }
@@ -170,6 +171,21 @@ namespace WebApplication.Controllers
             var response = await _client.DeleteAsync("api/Addresses/" + id);
 
             return RedirectToAction("Index");
+        }
+
+        // GET: Distance
+        public async Task<IActionResult> Distance ()
+        {
+            List<Address> addresses = new List<Address>();
+            HttpResponseMessage res = await _client.GetAsync("/api/Addresses");
+
+            if (res.IsSuccessStatusCode)
+            {
+                var result = res.Content.ReadAsStringAsync().Result;
+                addresses = JsonConvert.DeserializeObject<List<Address>>(result);
+            }
+
+            return View(addresses);
         }
     }
 }
