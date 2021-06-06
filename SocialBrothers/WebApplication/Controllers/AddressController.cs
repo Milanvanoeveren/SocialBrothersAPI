@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using TodoApi.Models;
 using WebApplication.Helpers;
 using WebApplication.Models;
@@ -207,15 +208,86 @@ namespace WebApplication.Controllers
                 addresses = JsonConvert.DeserializeObject<List<Address>>(result);
             }
 
+            Address address1 = addresses.FirstOrDefault(item => item.Id == distanceViewModel.Addres1Id);
+            Address address2 = addresses.FirstOrDefault(item => item.Id == distanceViewModel.Addres2Id);
+            string addressFrom = "" + address1.Street + " " + address1.HouseNumber + " " + address1.PostalCode + " " + address1.City + " " + address1.Country;
+            string addressTo = "" + address2.Street + " " + address2.HouseNumber + " " + address2.PostalCode + " " + address2.City + " " + address2.Country;
+
             DistanceViewModel newDistanceViewModel = new DistanceViewModel()
             {
                 Addresses = addresses,
-                Address1 = addresses.FirstOrDefault(item => item.Id == distanceViewModel.Addres1Id),
-                Address2 = addresses.FirstOrDefault(item => item.Id == distanceViewModel.Addres2Id),
-                Distance = 1
+                Address1 = address1,
+                Address2 = address2,
+                Distance = GetDistance(addressFrom, addressTo)
             };
 
             return View(newDistanceViewModel);
+        }
+
+        public double GetDistance(string addressFrom, string addressTo)
+        {
+            double distance = 0;
+            string key = "ce06124121561d6e2d30aaece6957972";
+            string url1 = "http://api.positionstack.com/v1/forward?access_key=" + key + "&query=" + addressFrom;
+            url1 = url1.Replace(" ", "+");
+            string url2 = "http://api.positionstack.com/v1/forward?access_key=" + key + "&query=" + addressTo;
+            url2 = url2.Replace(" ", "+");
+
+            string content1 = FileGetContents(url1);
+            string content2 = FileGetContents(url2);
+
+            JObject object1 = JObject.Parse(content1);
+            JObject object2 = JObject.Parse(content2);
+            try
+            {
+                double latitude1 = (double)object1.SelectToken("data[0].latitude");
+                double longitude1 = (double)object1.SelectToken("data[0].longitude");
+
+                double latitude2 = (double)object2.SelectToken("data[0].latitude");
+                double longitude2 = (double)object2.SelectToken("data[0].longitude");
+
+                distance = CalculateDistance(latitude1, longitude1, latitude2, longitude2);
+
+                return distance;
+            }
+            catch
+            {
+                return distance;
+            } 
+        }
+
+        private string FileGetContents(string fileName)
+        {
+            string sContents;
+            try
+            {
+                if (fileName.ToLower().IndexOf("http:") > -1)
+                {
+                    System.Net.WebClient wc = new System.Net.WebClient();
+                    byte[] response = wc.DownloadData(fileName);
+                    sContents = System.Text.Encoding.ASCII.GetString(response);
+
+                }
+                else
+                {
+                    System.IO.StreamReader sr = new System.IO.StreamReader(fileName);
+                    sContents = sr.ReadToEnd();
+                    sr.Close();
+                }
+            }
+            catch { sContents = "unable to connect to server "; }
+            return sContents;
+        }
+
+        private double CalculateDistance(double lat1, double long1, double lat2, double long2)
+        {
+            var d1 = lat1 * (Math.PI / 180.0);
+            var num1 = long1 * (Math.PI / 180.0);
+            var d2 = lat2 * (Math.PI / 180.0);
+            var num2 = long2 * (Math.PI / 180.0) - num1;
+            var d3 = Math.Pow(Math.Sin((d2 - d1) / 2.0), 2.0) +
+                     Math.Cos(d1) * Math.Cos(d2) * Math.Pow(Math.Sin(num2 / 2.0), 2.0);
+            return (6376500.0 * (2.0 * Math.Atan2(Math.Sqrt(d3), Math.Sqrt(1.0 - d3))) / 1000);
         }
     }
 }
