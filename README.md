@@ -22,7 +22,7 @@ Ik ben trots op de volgende punten:
 
 ## Minder trots
 Ik ben minder trots op de volgende punten:
-- De filter methode is niet compleet dynamisch en is ook hoofdlettergevoelig
+- De filter methode is niet compleet dynamisch en is ook hoofdlettergevoelig. Ik had dit graag compleet dynamisch gemaakt, maar ik heb nog geen oplossing gevonden hiervoor. Verder zou ik er ook graag voor willen zoeken dat hoofdletters niet per se nodig zijn.
 - Het berekenen van de afstand gebruikt veel methodes en code. Ik had geprobeerd om de google maps API te gebruiken, maar die vereist sinds 2018 creditcard gegevens en ik heb helaas geen creditcard. Ik heb daarom gebruik gemaakt van een andere API waar dit geen vereiste is.
 
 ## Uitleg functionaliteiten
