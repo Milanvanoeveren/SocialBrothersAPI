@@ -100,14 +100,12 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Street,HouseNumber,PostalCode,City,Country")] Address address)
         {
-            Address newAddress = new Address();
             StringContent content = new StringContent(JsonConvert.SerializeObject(address), Encoding.UTF8, "application/json");
             HttpResponseMessage res = await _client.PostAsync("/api/Addresses/", content);
 
             if (res.IsSuccessStatusCode)
             {
                 string apiResponse = await res.Content.ReadAsStringAsync();
-                newAddress = JsonConvert.DeserializeObject<Address>(apiResponse);
             }
 
             return RedirectToAction("Index");
@@ -140,14 +138,12 @@ namespace WebApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(long id, [Bind("Id,Street,HouseNumber,PostalCode,City,Country")] Address address)
         {
-            Address newAddress = new Address();
             StringContent content = new StringContent(JsonConvert.SerializeObject(address), Encoding.UTF8, "application/json");
             HttpResponseMessage res = await _client.PutAsync("/api/Addresses/" + address.Id, content);
 
             if (res.IsSuccessStatusCode)
             {
                 string apiResponse = await res.Content.ReadAsStringAsync();
-                newAddress = JsonConvert.DeserializeObject<Address>(apiResponse);
             }
 
             return RedirectToAction("Index");
