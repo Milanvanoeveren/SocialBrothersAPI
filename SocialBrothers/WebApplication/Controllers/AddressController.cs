@@ -58,8 +58,7 @@ namespace WebApplication.Controllers
                 {
                     if (prop.Name.Equals(sort))
                     {
-                        //TODO prop.name has to get the same as s.
-                        addresses = addresses.OrderBy(s => prop.Name).ToList();
+                        addresses = addresses.OrderBy(s => s.GetType().GetProperty(sort).GetValue(s, null)).ToList();
                         break;
                     }
                 }
