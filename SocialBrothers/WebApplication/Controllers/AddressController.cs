@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using TodoApi.Models;
 using WebApplication.Helpers;
+using WebApplication.Models;
 
 namespace WebApplication.Controllers
 {
@@ -185,7 +186,36 @@ namespace WebApplication.Controllers
                 addresses = JsonConvert.DeserializeObject<List<Address>>(result);
             }
 
-            return View(addresses);
+            DistanceViewModel distanceViewModel = new DistanceViewModel()
+            {
+                Addresses = addresses
+            };
+
+            return View(distanceViewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Distance(DistanceViewModel distanceViewModel)
+        {
+            List<Address> addresses = new List<Address>();
+            HttpResponseMessage res = await _client.GetAsync("/api/Addresses");
+
+            if (res.IsSuccessStatusCode)
+            {
+                var result = res.Content.ReadAsStringAsync().Result;
+                addresses = JsonConvert.DeserializeObject<List<Address>>(result);
+            }
+
+            DistanceViewModel newDistanceViewModel = new DistanceViewModel()
+            {
+                Addresses = addresses,
+                Address1 = addresses.FirstOrDefault(item => item.Id == distanceViewModel.Addres1Id),
+                Address2 = addresses.FirstOrDefault(item => item.Id == distanceViewModel.Addres2Id),
+                Distance = 1
+            };
+
+            return View(newDistanceViewModel);
         }
     }
 }

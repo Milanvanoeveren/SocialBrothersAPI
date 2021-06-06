@@ -1,4 +1,4 @@
-﻿@model IEnumerable<TodoApi.Models.Address>
+﻿@model DistanceViewModel
 
 @{
     ViewData["Title"] = "Distance";
@@ -6,51 +6,41 @@
 
 <h1>Distance</h1>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Street)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.HouseNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PostalCode)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.City)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Country)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Street)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.HouseNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PostalCode)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.City)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Country)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Distance">
+
+            <div class="form-group">
+                <label>Address 1</label>
+                <select asp-for="Addres1Id" required>
+                    @foreach (var item in Model.Addresses)
+                    {
+                        <option value="@item.Id">
+                            @item.Street @item.HouseNumber, @item.PostalCode @item.City
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Address 2</label>
+                <select asp-for="Addres2Id" required>
+                    @foreach (var item in Model.Addresses)
+                    {
+                        <option value="@item.Id">
+                            @item.Street @item.HouseNumber, @item.PostalCode @item.City
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Calculate" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+    @if (Model.Distance != 0)
+    {
+        <p>The distance between @Model.Address1.Street @Model.Address1.HouseNumber and @Model.Address2.Street @Model.Address2.HouseNumber is: @Model.Distance km</p>
+    }
+</div>
